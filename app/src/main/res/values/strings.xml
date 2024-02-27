@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">2Games</string>
+    <string name="senku_botom_name">Senku</string>
+    <string name="botom_name_2048">2048</string>
+    <string name="Texto_Principal">Select Game</string>
+    <string name="Title2048">2048</string>
+    <string name="reset">Reset</string>
+    <string name="senkuTitulo">Senku</string>
+    <string name="back">Back</string>
+    <string name="undomove">undoMove</string>
+</resources>
