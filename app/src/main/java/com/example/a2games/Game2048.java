@@ -39,7 +39,7 @@ public class Game2048 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game2048);
-        
+
         //Hacemos todos los Finds necesarios
         panelPrincipal = findViewById(R.id.panelPrincipal);
         buttonContainer = findViewById(R.id.gridLayout);
@@ -98,7 +98,7 @@ public class Game2048 extends AppCompatActivity {
                         if (isWin()) {
                             MensajeGanar();
                         }
-                        guardarPosiciones();
+                        //guardarPosiciones();
                         backButton.setVisibility(View.VISIBLE);
                         break;
                 }
@@ -150,7 +150,7 @@ public class Game2048 extends AppCompatActivity {
         float X = endX - startX;
         float Y = endY - startY;
         sumado = 0;
-
+        this.guardarPosiciones();
         if ( Math.abs(X) > MIN_DISTANCE && Math.abs(X) > Math.abs(Y)) {
             if (X > 0) {
 
@@ -183,6 +183,7 @@ public class Game2048 extends AppCompatActivity {
 
             }
         }
+
     }
     private void moverFichasEnColumna(int columna, Direccion direccion) {
         int[] columnaActual = new int[TableroX];
@@ -372,11 +373,13 @@ public class Game2048 extends AppCompatActivity {
     private void volverPosiciones(){
         for (int i = 0; i < TableroX; i++) {
             for (int j = 0; j < TableroY; j++) {
+
                 if(undoButtons[i][j] == 0){
                     buttons[i][j].setText(" ");
                 }else{
                     buttons[i][j].setText(String.valueOf(undoButtons[i][j]));
                 }
+
             }
         }
     }
