@@ -63,7 +63,8 @@ public class Game2048 extends AppCompatActivity {
                 int i = Integer.parseInt(score.getText().toString()) - sumado;
                 score.setText(String.valueOf(i));
                 volverPosiciones();
-                backButton.setVisibility(View.INVISIBLE);
+                sumado = 0;
+                //backButton.setVisibility(View.INVISIBLE);
             }
         });
 

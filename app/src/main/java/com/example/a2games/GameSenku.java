@@ -7,14 +7,20 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class GameSenku extends AppCompatActivity {
 
     public GridLayout gridLayout;
     public ImageButton[][] botones = new ImageButton[7][7];
-
+    public ImageButton[][] undoBotones = new ImageButton[7][7];
+    public Button resetButon;
+    public Button backButon;
+    public TextView score;
+    public int restMoveScore = 1;
     final int viva = 0;
     final int vacia = 1;
     final int seleccionada = 2;
@@ -24,6 +30,27 @@ public class GameSenku extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_senku);
         gridLayout = findViewById(R.id.gridLayout);
+        resetButon = findViewById(R.id.resetSenku);
+        backButon = findViewById(R.id.backSenku);
+        score = findViewById(R.id.ScoreSenku);
+        resetButon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                score.setText("0");
+                iniciarJuego();
+            }
+        });
+
+        backButon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int i = Integer.parseInt(score.getText().toString()) - restMoveScore;
+                restMoveScore = 0;
+                volverEstadoAnterior();
+            }
+        });
+
+
         iniciarJuego();
     }
 
@@ -78,10 +105,10 @@ public class GameSenku extends AppCompatActivity {
                     if (botones[i][j]!= null){
                         if((int)botones[i][j].getTag() == this.seleccionada) {
                             if((int)imageButton.getTag() == this.vacia){
-                                //botones[i][j].setTag(this.viva);
-                                //botones[i][j].setImageResource(R.drawable.ficha);
-                                this.move(i,j,row,col);
 
+                                this.move(i,j,row,col);
+                                int aux = Integer.parseInt(score.getText().toString())+1;
+                                score.setText(String.valueOf(aux));
                             }else{
                                 botones[i][j].setTag(this.viva);
                                 botones[i][j].setImageResource(R.drawable.ficha);
@@ -90,6 +117,7 @@ public class GameSenku extends AppCompatActivity {
                     }
                 }
             }
+            
             if(this.hasGanado()){
                 this.MensajeGanar();
             }else{
@@ -126,7 +154,6 @@ public class GameSenku extends AppCompatActivity {
         return false;
 
     }
-
     public boolean hasGanado(){
         int contador = 0;
         for (int i = 0; i < 7; i++) {
@@ -143,7 +170,6 @@ public class GameSenku extends AppCompatActivity {
         }
         return true;
     }
-
     public  boolean hasPerdido(){
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
@@ -157,7 +183,6 @@ public class GameSenku extends AppCompatActivity {
         }
         return true;
     }
-
     public void move(int iSeleccionadaPrimera,int jSeleccionadaPrimera,int iSeleccionadaSegunda, int jSeleccionadaSegunda) {
         if ((iSeleccionadaPrimera == iSeleccionadaSegunda && Math.abs(jSeleccionadaPrimera - jSeleccionadaSegunda) == 2) ||
                 (jSeleccionadaPrimera == jSeleccionadaSegunda && Math.abs(iSeleccionadaPrimera - iSeleccionadaSegunda) == 2)) {
@@ -187,7 +212,6 @@ public class GameSenku extends AppCompatActivity {
             botones[iSeleccionadaPrimera][jSeleccionadaPrimera].setImageResource(R.drawable.ficha);
         }
     }
-
     public boolean canMove(int row,int col){
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
@@ -213,7 +237,6 @@ public class GameSenku extends AppCompatActivity {
         }
         return false;
     }
-
     private void MensajeGanar() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("¡HAS GANADO!")
@@ -222,7 +245,6 @@ public class GameSenku extends AppCompatActivity {
         AlertDialog gameOverDialog = builder.create();
         gameOverDialog.show();
     }
-
     private void MensajePerder() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("¡HAS PERDIDO!")
@@ -230,5 +252,23 @@ public class GameSenku extends AppCompatActivity {
 
         AlertDialog gameOverDialog = builder.create();
         gameOverDialog.show();
+    }
+    private void guardarEstado(){
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                if (botones[i][j]!= null){
+                    undoBotones[i][j] = botones[i][j];
+                }
+            }
+        }
+    }
+    private void volverEstadoAnterior(){
+        for (int i = 0; i < 7; i++) {
+            for (int j = 0; j < 7; j++) {
+                if (botones[i][j]!= null){
+                    botones[i][j] = undoBotones[i][j];
+                }
+            }
+        }
     }
 }
