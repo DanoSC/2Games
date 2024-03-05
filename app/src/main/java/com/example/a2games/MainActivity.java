@@ -5,6 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -13,28 +17,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.boton2048).setOnClickListener(new View.OnClickListener() {
+        Animation animation = AnimationUtils.loadAnimation(this, R.anim.animation);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+
             @Override
-            public void onClick(View view) {
-                start2048();
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            public void onAnimationEnd(Animation animation) {
+                startActivity(new Intent(MainActivity.this,
+                        Login.class));
+                MainActivity.this.finish();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
             }
         });
 
-        findViewById(R.id.botonSenku).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startSenku();
-            }
-        });
+        ImageView logo2 =  (ImageView) findViewById(R.id.imagenPantallaPrincipal);
+        logo2.startAnimation(animation);
+
+
     }
 
-    private void start2048() {
-        Intent intent = new Intent(this, Game2048.class);
-        startActivity(intent);
-    }
 
-    private void startSenku() {
-        Intent intent = new Intent(this, GameSenku.class);
-        startActivity(intent);
-    }
 }

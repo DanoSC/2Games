@@ -8,4 +8,11 @@
     <string name="senkuTitulo">Senku</string>
     <string name="back">Back</string>
     <string name="undomove">undoMove</string>
+    <string name="Login_Usuario">Introduce el Usuario</string>
+    <string name="texto_Login_Contraseña">Introduce la contraseña</string>
+    <string name="Boton_Login_iniciar">Iniciar</string>
+    <string name="boton_Login_Registrarse">Registrarse</string>
+    <string name="confirmar_contrase">Confirmar Contraseña</string>
+    <string name="boton_volver_registro">Volver</string>
+    <string name="boton_registro">Resgistrarse</string>
 </resources>

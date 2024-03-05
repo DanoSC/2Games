@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Login">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/tituloLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:textSize="40dp"/>
+
+        <EditText
+            android:id="@+id/UserLoginText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/Login_Usuario"
+            android:textColor="@color/white"
+            android:textColorHint="@color/colorFondoRegistros"/>
+
+        <EditText
+            android:id="@+id/ContraLoginText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/texto_Login_Contraseña"
+            android:inputType="textPassword"
+            android:textColor="@color/white"
+            android:textColorHint="@color/colorFondoRegistros"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/boton_Iniciar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Boton_Login_iniciar"
+                android:layout_margin="15dp"
+                android:backgroundTint="@color/colorFondoRegistros"
+                android:textColor="@color/white"/>
+
+            <Button
+                android:id="@+id/boton_Registrar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/boton_Login_Registrarse"
+                android:layout_margin="15dp"
+                android:backgroundTint="@color/colorFondoRegistros"
+                android:textColor="@color/white"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

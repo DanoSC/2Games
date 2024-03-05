@@ -1,9 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GamesMenu">
+    tools:context=".GamesMenu"
+    android:padding="16dp"
+    android:background="@color/white">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tittleApp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Texto_Principal"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:textSize="40sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tittleApp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/boton2048"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/botom_name_2048"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:layout_marginRight="10dp"
+            android:backgroundTint="@color/black"
+            />
+
+        <Button
+            android:id="@+id/botonSenku"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/senku_botom_name"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:backgroundTint="@color/black"
+            />
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>
