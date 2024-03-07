@@ -3,8 +3,10 @@ package com.example.a2games;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
@@ -16,10 +18,16 @@ public class GameSenku extends AppCompatActivity {
 
     public GridLayout gridLayout;
     public ImageButton[][] botones = new ImageButton[7][7];
-    public ImageButton[][] undoBotones = new ImageButton[7][7];
+    public int[][] undoBotones = new int[7][7];
     public Button resetButon;
     public Button backButon;
     public TextView score;
+    public CountDownTimer timer;
+    public TextView timeView;
+    public TextView maxTimeView;
+    public long timeLeft;
+    public TextView maxScore;
+    public boolean timeEnd;
     public int restMoveScore = 1;
     final int viva = 0;
     final int vacia = 1;
@@ -29,15 +37,21 @@ public class GameSenku extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_senku);
-        gridLayout = findViewById(R.id.gridLayout);
+        gridLayout = findViewById(R.id.gridLayoutSenku);
         resetButon = findViewById(R.id.resetSenku);
         backButon = findViewById(R.id.backSenku);
         score = findViewById(R.id.ScoreSenku);
+        maxScore = findViewById(R.id.SenkuMaxScore);
+        timeView = findViewById(R.id.timeView);
+        maxTimeView = findViewById(R.id.timeViewScore);
+
         resetButon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 score.setText("0");
                 iniciarJuego();
+                timer.cancel();
+                iniciarContador();
             }
         });
 
@@ -46,15 +60,25 @@ public class GameSenku extends AppCompatActivity {
             public void onClick(View v) {
                 int i = Integer.parseInt(score.getText().toString()) - restMoveScore;
                 restMoveScore = 0;
+                score.setText(""+i);
                 volverEstadoAnterior();
             }
         });
 
 
         iniciarJuego();
+        iniciarContador();
     }
 
     public void iniciarJuego() {
+
+        SharedPreferences sharedPreferences = getSharedPreferences("Credentials", MODE_PRIVATE);
+        int maxValue = sharedPreferences.getInt("scoreSenku", 0);
+        long maxTime = sharedPreferences.getLong("timeSenku", 0);
+
+        maxScore.setText(String.valueOf(maxValue));
+        maxTimeView.setText(String.valueOf(maxTime));
+
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
                 // Ignorar las esquinas que no forman parte de la cruz
@@ -69,7 +93,7 @@ public class GameSenku extends AppCompatActivity {
                     params.rowSpec = GridLayout.spec(i, 1f);
                     params.columnSpec = GridLayout.spec(j, 1f);
                     imageButton.setLayoutParams(params);
-                    imageButton.setBackgroundColor(getResources().getColor(R.color.white));
+                    imageButton.setBackgroundColor(getResources().getColor(R.color.color_0));
                     imageButton.setId(i * 7 + j); // ID único para cada botón
                     final int fil = i;
                     final int col = j;
@@ -117,7 +141,7 @@ public class GameSenku extends AppCompatActivity {
                     }
                 }
             }
-            
+
             if(this.hasGanado()){
                 this.MensajeGanar();
             }else{
@@ -131,6 +155,7 @@ public class GameSenku extends AppCompatActivity {
 
 
         }else{
+            this.guardarEstado();
             if((int)imageButton.getTag() != this.vacia){
                 imageButton.setImageResource(R.drawable.ficha_selecionada);
                 imageButton.setTag(this.seleccionada);
@@ -141,17 +166,21 @@ public class GameSenku extends AppCompatActivity {
 
     }
     public boolean isAnySelected(){
-        for (int i = 0; i < 7; i++) {
-            for (int j = 0; j < 7; j++) {
-                if (botones[i][j]!= null){
-                    if((int)botones[i][j].getTag() == this.seleccionada) {
+        if(timeEnd){
+            return true;
+        }else{
+            for (int i = 0; i < 7; i++) {
+                for (int j = 0; j < 7; j++) {
+                    if (botones[i][j]!= null){
+                        if((int)botones[i][j].getTag() == this.seleccionada) {
 
-                        return true;
+                            return true;
+                        }
                     }
                 }
             }
+            return false;
         }
-        return false;
 
     }
     public boolean hasGanado(){
@@ -238,6 +267,8 @@ public class GameSenku extends AppCompatActivity {
         return false;
     }
     private void MensajeGanar() {
+        timer.cancel();
+        guardarScore();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("¡HAS GANADO!")
                 .setMessage("Has llegado al 2048, si quieres puedes seguir jugando");
@@ -246,6 +277,8 @@ public class GameSenku extends AppCompatActivity {
         gameOverDialog.show();
     }
     private void MensajePerder() {
+        timer.cancel();
+        guardarScore();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("¡HAS PERDIDO!")
                 .setMessage("Te has quedado sin movimientos");
@@ -257,18 +290,69 @@ public class GameSenku extends AppCompatActivity {
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
                 if (botones[i][j]!= null){
-                    undoBotones[i][j] = botones[i][j];
+                    undoBotones[i][j] = Integer.parseInt(botones[i][j].getTag().toString());
                 }
             }
         }
+        System.out.println("gaurdamos el estado");
     }
     private void volverEstadoAnterior(){
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
                 if (botones[i][j]!= null){
-                    botones[i][j] = undoBotones[i][j];
+                    botones[i][j].setTag(undoBotones[i][j]);
+                    if(undoBotones[i][j] == this.viva){
+                        botones[i][j].setImageResource(R.drawable.ficha);
+                    }else if(undoBotones[i][j] == this.vacia){
+                        botones[i][j].setImageResource(R.drawable.ficha_vacia);
+                    }else if(undoBotones[i][j] == this.seleccionada){
+                        botones[i][j].setImageResource(R.drawable.ficha_selecionada);
+                    }
+
                 }
             }
         }
+        System.out.println("Volvemos al estado anterior");
     }
+    private void iniciarContador(){
+        timeEnd = false;
+        timer = new CountDownTimer(30000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                timeView.setText("" + (millisUntilFinished / 1000));
+                timeLeft = millisUntilFinished;
+            }
+            public void onFinish() {
+                timeEnd = true;
+                MensajePerder();
+            }
+        }.start();
+    }
+    private void guardarScore(){
+        SharedPreferences sharedPreferences = getSharedPreferences("Credentials", MODE_PRIVATE);
+        int scorePuntuation = Integer.parseInt(score.getText().toString());
+        int maxScorePuntuation = Integer.parseInt(maxScore.getText().toString());
+        long timeScoreSaved = sharedPreferences.getLong("timeSenku", 0);
+
+        if(timeEnd){
+            long time = timeLeft/1000;
+                if(scorePuntuation > maxScorePuntuation && time > timeScoreSaved){
+                    System.out.println("Guardamos los scores");
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("scoreSenku", scorePuntuation);
+                    editor.putLong("timeSenku", time);
+                    editor.apply();
+                }
+            }else {
+                if(timeScoreSaved == 0){
+                    if(scorePuntuation > maxScorePuntuation){
+                        System.out.println("Guardamos los scores solo puntiacion");
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putInt("scoreSenku", scorePuntuation);
+                        editor.apply();
+                    }
+                }
+            }
+    }
+
+
 }

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,6 +23,8 @@ public class Game2048 extends AppCompatActivity {
     private View panelPrincipal;
     private GridLayout buttonContainer;
     private TextView score;
+
+    private TextView maxScore;
     private enum Direccion {
         IZQUIERDA,
         DERECHA,
@@ -46,6 +49,7 @@ public class Game2048 extends AppCompatActivity {
         resetButton = findViewById(R.id.ResetButton);
         backButton = findViewById(R.id.Back2048);
         score = findViewById(R.id.score);
+        maxScore = findViewById(R.id.MaxScore);
 
         buttons = new Button[TableroX][TableroY];
         undoButtons = new int[TableroX][TableroY];
@@ -63,8 +67,9 @@ public class Game2048 extends AppCompatActivity {
                 int i = Integer.parseInt(score.getText().toString()) - sumado;
                 score.setText(String.valueOf(i));
                 volverPosiciones();
+                pintarCasillas();
                 sumado = 0;
-                //backButton.setVisibility(View.INVISIBLE);
+
             }
         });
 
@@ -92,15 +97,17 @@ public class Game2048 extends AppCompatActivity {
                         float endY = event.getY();
 
                         direccionMovimiento(startX, startY, endX, endY);
+
                         generarDos();
+                        pintarCasillas();
+
                         if (isLost()) {
                             MensajePerder();
                         }
                         if (isWin()) {
                             MensajeGanar();
                         }
-                        //guardarPosiciones();
-                        backButton.setVisibility(View.VISIBLE);
+
                         break;
                 }
 
@@ -116,6 +123,9 @@ public class Game2048 extends AppCompatActivity {
 
     }
     public void iniciarJuego(){
+        SharedPreferences sharedPreferences = getSharedPreferences("Credentials", MODE_PRIVATE);
+        int maxValue = sharedPreferences.getInt("score2048", 0);
+        maxScore.setText(String.valueOf(maxValue));
         int id = 1;
         String boton;
         for (int i = 0; i < TableroX; i++) {
@@ -139,12 +149,14 @@ public class Game2048 extends AppCompatActivity {
         int inicioI = (int)(Math.random() * TableroX);
         int inicioJ = (int)(Math.random() * TableroY);
 
-        while(!buttons[inicioI][inicioJ].getText().equals(" ") && !tableroLleno()){
-            inicioI = (int)(Math.random() * TableroX);
-            inicioJ = (int)(Math.random() * TableroY);
-        }
-        if(!tableroLleno()) {
+        for(int i = 0;i<2 && !tableroLleno();i++){
+            while(!buttons[inicioI][inicioJ].getText().equals(" ")){
+                inicioI = (int)(Math.random() * TableroX);
+                inicioJ = (int)(Math.random() * TableroY);
+            }
+
             buttons[inicioI][inicioJ].setText("2");
+
         }
     }
     public void direccionMovimiento(float startX, float startY, float endX, float endY){
@@ -201,31 +213,34 @@ public class Game2048 extends AppCompatActivity {
 
         switch (direccion) {
             case ABAJO:
-                while(movimientos){
-                    movimientos = false;
-                    for (int i = TableroX-1; i >= 0; i--) {
-                        if (columnaActual[i] == 0) {
-                            if(i != 0){
-                                if(columnaActual[i-1] != 0){
-                                    columnaActual[i] = columnaActual[i - 1];
-                                    columnaActual[i - 1] = 0;
-                                    buttons[i][columna].setText(buttons[i - 1][columna].getText());
-                                    buttons[i - 1][columna].setText(" ");
-                                    movimientos = true;
-                                }
-                            }
-                        } else {
-                            if (!(i == 0)) {
-                                if (columnaActual[i] == columnaActual[i-1]) {
-                                    int suma = columnaActual[i] + columnaActual[i];
-                                    columnaActual[i] = columnaActual[i] + columnaActual[i];
-                                    columnaActual[i - 1] = 0;
-                                    buttons[i][columna].setText(String.valueOf(suma));
-                                    buttons[i - 1][columna].setText(" ");
-                                    sumar = sumar + suma;
-                                    movimientos = true;
-                                }
-                            }
+                for (int i = TableroX - 2; i >= 0; i--) {
+                    if (!buttons[i][columna].getText().toString().equals(" ")) {
+                        int k = i;
+                        while (k < TableroX - 1 && buttons[k + 1][columna].getText().toString().equals(" ")) {
+                            buttons[k + 1][columna].setText(buttons[k][columna].getText());
+                            buttons[k][columna].setText(" ");
+                            k++;
+                        }
+                    }
+                }
+
+                for (int i = TableroX - 1; i > 0; i--) {
+                    if (!buttons[i][columna].getText().toString().equals(" ") &&
+                            buttons[i][columna].getText().toString().equals(buttons[i - 1][columna].getText().toString())) {
+                        int valor = Integer.parseInt(buttons[i][columna].getText().toString()) * 2;
+                        sumar = sumar + valor;
+                        buttons[i][columna].setText(String.valueOf(valor));
+                        buttons[i - 1][columna].setText(" ");
+                    }
+                }
+
+                for (int i = TableroX - 2; i >= 0; i--) {
+                    if (!buttons[i][columna].getText().toString().equals(" ")) {
+                        int k = i;
+                        while (k < TableroX - 1 && buttons[k + 1][columna].getText().toString().equals(" ")) {
+                            buttons[k + 1][columna].setText(buttons[k][columna].getText());
+                            buttons[k][columna].setText(" ");
+                            k++;
                         }
                     }
                 }
@@ -237,32 +252,35 @@ public class Game2048 extends AppCompatActivity {
 
 
             case ARRIBA:
-                while(movimientos){
-                    boolean anteriorVacio = false;
-                    movimientos = false;
-                    for (int i = 0; i < TableroX; i++) {
-                        if (columnaActual[i] == 0) {
-                            if(!(i == TableroX-1)){
-                                if(columnaActual[i+1] != 0){
-                                    columnaActual[i] = columnaActual[i + 1];
-                                    columnaActual[i + 1] = 0;
-                                    buttons[i][columna].setText(buttons[i + 1][columna].getText());
-                                    buttons[i + 1][columna].setText(" ");
-                                    movimientos = true;
-                                }
-                            }
-                        } else {
-                            if (!(i == TableroX-1)) {
-                                if (columnaActual[i] == columnaActual[i+1]) {
-                                    int suma = columnaActual[i] + columnaActual[i];
-                                    columnaActual[i] = columnaActual[i] + columnaActual[i];
-                                    columnaActual[i + 1] = 0;
-                                    buttons[i][columna].setText(String.valueOf(suma));
-                                    buttons[i + 1][columna].setText(" ");
-                                    sumar = sumar + suma;
-                                    movimientos = true;
-                                }
-                            }
+                for (int i = 1; i < TableroX; i++) {
+                    if (!buttons[i][columna].getText().toString().equals(" ")) {
+                        int k = i;
+                        while (k > 0 && buttons[k - 1][columna].getText().toString().equals(" ")) {
+                            buttons[k - 1][columna].setText(buttons[k][columna].getText());
+                            buttons[k][columna].setText(" ");
+                            k--;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < TableroX - 1; i++) {
+                    if (!buttons[i][columna].getText().toString().equals(" ") &&
+                            buttons[i][columna].getText().toString().equals(buttons[i + 1][columna].getText().toString())) {
+                        int valor = Integer.parseInt(buttons[i][columna].getText().toString()) * 2;
+                        sumar = sumar + valor;
+                        buttons[i][columna].setText(String.valueOf(valor));
+                        buttons[i + 1][columna].setText(" ");
+                    }
+                }
+
+
+                for (int i = 1; i < TableroX; i++) {
+                    if (!buttons[i][columna].getText().toString().equals(" ")) {
+                        int k = i;
+                        while (k > 0 && buttons[k - 1][columna].getText().toString().equals(" ")) {
+                            buttons[k - 1][columna].setText(buttons[k][columna].getText());
+                            buttons[k][columna].setText(" ");
+                            k--;
                         }
                     }
                 }
@@ -287,34 +305,41 @@ public class Game2048 extends AppCompatActivity {
         }
         switch (direccion) {
             case DERECHA:
-                while(movimientos){
-                    movimientos = false;
-                    for (int i = TableroY-1; i >= 0; i--) {
-                        if (filaActual[i] == 0) {
-                            if(i != 0){
-                                if(filaActual[i-1] != 0){
-                                    filaActual[i] = filaActual[i - 1];
-                                    filaActual[i - 1] = 0;
-                                    buttons[fila][i].setText(buttons[fila][i-1].getText());
-                                    buttons[fila][i-1].setText(" ");
-                                    movimientos = true;
-                                }
-                            }
-                        } else {
-                            if (!(i == 0)) {
-                                if (filaActual[i] == filaActual[i-1]) {
-                                    int suma = filaActual[i] + filaActual[i];
-                                    filaActual[i] = filaActual[i] + filaActual[i];
-                                    filaActual[i - 1] = 0;
-                                    buttons[fila][i].setText(String.valueOf(suma));
-                                    buttons[fila][i-1].setText(" ");
-                                    sumar = sumar + suma;
-                                    movimientos = true;
-                                }
-                            }
+                for (int j = TableroY - 2; j >= 0; j--) {
+                    if (!buttons[fila][j].getText().toString().equals(" ")) {
+                        int k = j;
+                        while (k < TableroY - 1 && buttons[fila][k + 1].getText().toString().equals(" ")) {
+                            buttons[fila][k + 1].setText(buttons[fila][k].getText());
+                            buttons[fila][k].setText(" ");
+                            k++;
                         }
                     }
                 }
+
+                for (int j = TableroY - 1; j > 0; j--) {
+                    if (!buttons[fila][j].getText().toString().equals(" ") &&
+                            buttons[fila][j].getText().toString().equals(buttons[fila][j - 1].getText().toString())) {
+                        int valor = Integer.parseInt(buttons[fila][j].getText().toString()) * 2;
+                        sumar = sumar + valor;
+                        buttons[fila][j].setText(String.valueOf(valor));
+                        buttons[fila][j - 1].setText(" ");
+                    }
+                }
+
+
+
+                for (int j = TableroY - 2; j >= 0; j--) {
+                    if (!buttons[fila][j].getText().toString().equals(" ")) {
+                        int k = j;
+                        while (k < TableroY - 1 && buttons[fila][k + 1].getText().toString().equals(" ")) {
+                            buttons[fila][k + 1].setText(buttons[fila][k].getText());
+                            buttons[fila][k].setText(" ");
+                            k++;
+                        }
+                    }
+                }
+
+
                 sumado = sumar + sumado;
                 System.out.println(sumado);
                 sumar = sumar + Integer.parseInt(score.getText().toString());
@@ -322,32 +347,35 @@ public class Game2048 extends AppCompatActivity {
                 break;
 
             case IZQUIERDA:
-                while(movimientos){
-                    boolean anteriorVacio = false;
-                    movimientos = false;
-                    for (int i = 0; i < TableroX; i++) {
-                        if (filaActual[i] == 0) {
-                            if(!(i == TableroX-1)){
-                                if(filaActual[i+1] != 0){
-                                    filaActual[i] = filaActual[i + 1];
-                                    filaActual[i + 1] = 0;
-                                    buttons[fila][i].setText(buttons[fila][i+1].getText());
-                                    buttons[fila][i+1].setText(" ");
-                                    movimientos = true;
-                                }
-                            }
-                        } else {
-                            if (!(i == TableroX-1)) {
-                                if (filaActual[i] == filaActual[i+1]) {
-                                    int suma = filaActual[i] + filaActual[i];
-                                    filaActual[i] = filaActual[i] + filaActual[i];
-                                    filaActual[i + 1] = 0;
-                                    buttons[fila][i].setText(String.valueOf(suma));
-                                    buttons[fila][i+1].setText(" ");
-                                    sumar = sumar + suma;
-                                    movimientos = true;
-                                }
-                            }
+
+                for (int j = 1; j < TableroY; j++) {
+                    if (!buttons[fila][j].getText().toString().equals(" ")) {
+                        int k = j;
+                        while (k > 0 && buttons[fila][k - 1].getText().toString().equals(" ")) {
+                            buttons[fila][k - 1].setText(buttons[fila][k].getText());
+                            buttons[fila][k].setText(" ");
+                            k--;
+                        }
+                    }
+                }
+
+                for (int j = 0; j < TableroY - 1; j++) {
+                    if (!buttons[fila][j].getText().toString().equals(" ") &&
+                            buttons[fila][j].getText().toString().equals(buttons[fila][j + 1].getText().toString())) {
+                        int valor = Integer.parseInt(buttons[fila][j].getText().toString()) * 2;
+                        sumar = sumar + valor;
+                        buttons[fila][j].setText(String.valueOf(valor));
+                        buttons[fila][j + 1].setText(" ");
+                    }
+                }
+
+                for (int j = 1; j < TableroY; j++) {
+                    if (!buttons[fila][j].getText().toString().equals(" ")) {
+                        int k = j;
+                        while (k > 0 && buttons[fila][k - 1].getText().toString().equals(" ")) {
+                            buttons[fila][k - 1].setText(buttons[fila][k].getText());
+                            buttons[fila][k].setText(" ");
+                            k--;
                         }
                     }
                 }
@@ -434,6 +462,7 @@ public class Game2048 extends AppCompatActivity {
     }
 
     private void MensajeGanar() {
+        this.guardarScore();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("¡HAS GANADO!")
                 .setMessage("Has llegado al 2048, si quieres puedes seguir jugando");
@@ -443,12 +472,90 @@ public class Game2048 extends AppCompatActivity {
     }
 
     private void MensajePerder() {
+        this.guardarScore();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("¡HAS PERDIDO!")
                 .setMessage("Te has quedado sin movimientos");
 
         AlertDialog gameOverDialog = builder.create();
         gameOverDialog.show();
+    }
+
+    private void pintarCasillas(){
+        for (int i = 0; i < TableroX; i++) {
+            for (int j = 0; j < TableroY; j++) {
+                int aux;
+                if(buttons[i][j].getText().equals(" ")){
+                    aux = 0;
+                }else {
+                    aux = Integer.parseInt(buttons[i][j].getText().toString());
+                }
+
+                switch(aux){
+                    case 0:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_0));
+                        buttons[i][j].setTextSize(30);
+                        break;
+                    case 2:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_2));
+                        buttons[i][j].setTextSize(30);
+                        break;
+                    case 4:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_4));
+                        buttons[i][j].setTextSize(30);
+                        break;
+                    case 8:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_8));
+                        buttons[i][j].setTextSize(30);
+                        break;
+                    case 16:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_16));
+                        buttons[i][j].setTextSize(30);
+                        break;
+                    case 32:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_32));
+                        buttons[i][j].setTextSize(30);
+                        break;
+                    case 64:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_64));
+                        buttons[i][j].setTextSize(30);
+                        break;
+                    case 128:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_128));
+                        buttons[i][j].setTextSize(22);
+                        break;
+                    case 256:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_256));
+                        buttons[i][j].setTextSize(22);
+                        break;
+                    case 512:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_512));
+                        buttons[i][j].setTextSize(22);
+                        break;
+                    case 1024:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_1024));
+                        buttons[i][j].setTextSize(15);
+                        break;
+                    case 2048:
+                        buttons[i][j].setBackgroundColor(getColor(R.color.color_2048));
+                        buttons[i][j].setTextSize(15);
+                        break;
+                }
+            }
+        }
+    }
+
+    private void guardarScore(){
+        int scorePuntuation = Integer.parseInt(score.getText().toString());
+        int maxScorePuntuation = Integer.parseInt(maxScore.getText().toString());
+
+        if(scorePuntuation > maxScorePuntuation){
+            System.out.println("Guardamos los scores");
+            SharedPreferences sharedPreferences = getSharedPreferences("Credentials", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt("score2048", scorePuntuation);
+            editor.apply();
+        }
     }
 
 

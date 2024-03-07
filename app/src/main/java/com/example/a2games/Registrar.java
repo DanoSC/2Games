@@ -50,8 +50,7 @@ public class Registrar extends AppCompatActivity {
                         editor.putString("pass", newContra);
                         editor.putInt("score2048", 0);
                         editor.putInt("scoreSenku", 0);
-                        editor.putInt("timer2048", 0);
-                        editor.putInt("timeSenku", 0);
+                        editor.putLong("timeSenku", 0);
                         editor.apply();
                         Toast.makeText(getApplicationContext(), "Nuevo Usuario Guardado", Toast.LENGTH_SHORT).show();
                     } else {

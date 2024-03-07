@@ -38,7 +38,6 @@ public class Login extends AppCompatActivity {
         inciar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 comprobarDatos();
             }
         });
