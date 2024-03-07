@@ -316,7 +316,7 @@ public class GameSenku extends AppCompatActivity {
     }
     private void iniciarContador(){
         timeEnd = false;
-        timer = new CountDownTimer(30000, 1000) {
+        timer = new CountDownTimer(3000000, 1000) {
             public void onTick(long millisUntilFinished) {
                 timeView.setText("" + (millisUntilFinished / 1000));
                 timeLeft = millisUntilFinished;

@@ -98,7 +98,7 @@ public class Game2048 extends AppCompatActivity {
 
                         direccionMovimiento(startX, startY, endX, endY);
 
-                        generarDos();
+
                         pintarCasillas();
 
                         if (isLost()) {
@@ -196,6 +196,7 @@ public class Game2048 extends AppCompatActivity {
 
             }
         }
+        generarDos();
 
     }
     private void moverFichasEnColumna(int columna, Direccion direccion) {

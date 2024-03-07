@@ -3,6 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#4B4947</color>
+    <color name="grayBlack">#293133</color>
     <color name="seleccionada">#FFFD85</color>
     <color name="colorFichas">#0000FF</color>
     <color name="colorFondoRegistros">#8f8f8f</color>

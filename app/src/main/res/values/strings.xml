@@ -17,6 +17,7 @@
     <string name="boton_registro">Resgistrarse</string>
     <string name="titulo_menu">Seleccion tu juego</string>
     <string name="tiempo">Time</string>
+    <string name="tituloSettings">AJUSTES</string>
 
     <array name="itemsImage">
         <item>@drawable/logo2048</item>

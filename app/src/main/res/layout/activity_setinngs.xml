@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:padding="8dp"
     android:background="@color/gray"
     tools:context=".Setings">
 <LinearLayout
@@ -12,16 +12,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_centerHorizontal="true"
-    android:layout_marginTop="60dp"
+    android:layout_marginTop="30dp"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="16dp"
+    android:padding="8dp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     tools:ignore="MissingConstraints">
 
     <TextView
-        android:text="AJUSTES"
+        android:text="@string/tituloSettings"
         android:padding="10dp"
         android:layout_margin="10dp"
         android:layout_width="match_parent"
@@ -34,12 +34,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:backgroundTint="@color/grayBlack"
         tools:ignore="MissingConstraints">
 
         <TextView
@@ -57,7 +58,10 @@
             android:layout_margin="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:backgroundTint="@color/grayBlack"
+            android:textColor="@color/white"
+            android:background="@drawable/border_layout"/>
 
         <TextView
             android:id="@+id/settingScoreSemku"
@@ -66,7 +70,10 @@
             android:layout_margin="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:background="@drawable/border_layout"
+            android:backgroundTint="@color/grayBlack"
+            android:textColor="@color/white"/>
 
 
     </LinearLayout>
@@ -90,6 +97,7 @@
             android:layout_margin="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/grayBlack"
             android:textSize="20sp"/>
 
         <EditText
